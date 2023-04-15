@@ -97,7 +97,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landfarz
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
@@ -105,3 +105,13 @@ deploy:
   type: 'git'
   repo: git@github.com:JinyiSa/JinyiSa.github.io.git
   branch: gh_pages
+
+pandoc:
+  mathengine: mathjax
+
+math:
+  engine: mathjax
+  every_page: true
+  mathjax: 
+    enable: true
+    tags: ams
