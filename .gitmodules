@@ -1,0 +1,3 @@
+[submodule "themes/landfarz"]
+	path = themes/landfarz
+	url = https://github.com/wizardforcel/hexo-theme-landfarz.git
