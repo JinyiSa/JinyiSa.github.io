@@ -102,6 +102,6 @@ theme: landscape
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
-  type: 'git',
+  type: 'git'
   repo: git@github.com:JinyiSa/JinyiSa.github.io.git
-  branch: main
+  branch: gh_pages
