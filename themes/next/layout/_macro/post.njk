@@ -97,7 +97,9 @@
     {#####################}
     {### END POST BODY ###}
     {#####################}
-
+    {% if theme.git_talk.enabled and not is_index %}
+    <div>{% include 'git-talk.njk' %}</div>
+    {% endif %}
     <footer class="post-footer">
       {%- if is_index %}
         <div class="post-eof"></div>

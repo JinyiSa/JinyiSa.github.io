@@ -1,0 +1,30 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css" />
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: "{{theme.git_talk.clientID}}",
+        clientSecret: "{{theme.git_talk.clientSecret}}",
+        repo: "jinyisa.github.io", // 博客仓库地址
+        owner: "JinyiSa", // github 用户名
+        admin: ["JinyiSa"], // github 用户名
+        perPage: 20,
+        id: location.pathname.slice(0, 50), // 查找 issus 的条件，后面将对 id 有针对逻辑
+        title: "{{page.title}}",
+        body: "🚀 " + location.href + "评论区", // 初始化后,issues 的内容
+    });
+    gitalk.render("gitalk-container");
+</script>
+
+<style>
+	#issues_url{
+		text-align: center;
+    	font-size: 16px;
+	}
+	#issues_url a{
+		color:#6190e8;
+	}
+</style>
+<div id="issues_url">📢 因为是开源博客，为避免 <strong>Gitalk授权 </strong>带来的 <a href="https://github.com/dear-github/dear-github/issues/113">安全风险</a>，也可直接从issue中评论
+</div>

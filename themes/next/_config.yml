@@ -37,14 +37,17 @@ custom_file_path:
 
 # Schemes
 # scheme: Muse
-#scheme: Mist
-#scheme: Pisces
+# scheme: Mist
+# scheme: Pisces
 scheme: Gemini
 
 # Dark Mode
 darkmode: true
 
-
+git_talk:
+  enabled: true
+  clientID: 5791f863bd3cb59b8944
+  clientSecrets: 2543468c3817e75021aab686a82c16ef100f4263
 # ---------------------------------------------------------------
 # Site Information Settings
 # ---------------------------------------------------------------
