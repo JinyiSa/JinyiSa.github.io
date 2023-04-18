@@ -141,7 +141,7 @@ typedef enum {
     HAL_TIMEOUT = 0x03
 } HAL_StatusTypeDef;
 ```
-retValue是3，这意味着Time Out。但是50mS的时间怎么都该足够让一个2.5Msps的ADC完成一次采样了，百思不得其解。遂找一调过U5的学弟询问此时，学弟答：需要在初始化里加入如下代码：
+retValue是3，这意味着Time Out。但是50mS的时间怎么都该足够让一个2.5Msps的ADC完成一次采样了，百思不得其解。遂找一调过U5的学弟询问此事，学弟答：需要在初始化里加入如下代码：
 ```c
   SET_BIT(RCC->AHB3ENR, RCC_AHB3ENR_PWREN);
   HAL_Delay(1);
