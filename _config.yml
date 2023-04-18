@@ -115,3 +115,7 @@ math:
   mathjax: 
     enable: true
     tags: ams
+
+toc:
+  maxDepth: 5
+  slugify: false
