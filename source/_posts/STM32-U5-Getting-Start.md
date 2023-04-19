@@ -171,9 +171,7 @@ HAL_PWREx_EnableVddA();
 我打出一个？，怎么会接在LSI或者LSE上的，难道DAC只能低频工作吗？我总觉得不太对劲，遂打开了U5的Reference Manual找到DAC部分的DAC Features表格：  
 ![U5_DAC_Features.png](https://s2.loli.net/2023/04/18/7Z9gSKjDL2oqiT4.png)
 Maximum sampling rate（吐槽一下，ST怎么把采样率写成采样时间了）1Msps，我现在一头雾水，32.768KHz的Clk怎么能有1Msps的采样率，遂继续读RM，我先是看到了在DAC conversion里这样一段话:  
-
-    HFSEL bits of DAC_MCR must be set when dac_hclk or dac_ker_ck clock speed is faster than 80 MHz. It adds an extra delay to the transfer from DAC_DHRx register to DAC_DORx register. Refer to Table HFSEL description below for the limitation of the DAC_DORx update rate depending on HFSEL bits and dac_hclk clock frequency.If the data is updated or a software/hardware trigger event occurs during the non-allowed.period, the peripheral behavior is unpredictable.The above timing is only related to the limitation of the DAC interface. Refer also to the tSETTLING parameter value in the product datasheet.
-
+HFSEL bits of DAC_MCR must be set when dac_hclk or dac_ker_ck clock speed is faster than 80 MHz. It adds an extra delay to the transfer from DAC_DHRx register to DAC_DORx register. Refer to Table HFSEL description below for the limitation of the DAC_DORx update rate depending on HFSEL bits and dac_hclk clock frequency.If the data is updated or a software/hardware trigger event occurs during the non-allowed.period, the peripheral behavior is unpredictable.The above timing is only related to the limitation of the DAC interface. Refer also to the tSETTLING parameter value in the product datasheet.  
 似乎这个参数我也没配置正确来着，但这不是主要问题，我仍不知道1Msps的采样率从何而来，遂继续看，终于在DAC channel modes一节中找到了问题的答案。U5的DAC分为Normal mode和Sample and hold mode。我找到的那个MUX只负责SHA。。。。破案了。
 于是回到CubeMX，配置好DAC High Frequency Mode和Mode Select，生成代码，写一个打锯齿波的程序:
 ```c
