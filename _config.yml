@@ -3,13 +3,13 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Jinyi的小站
-subtitle: ''
+title: Something Boring
+subtitle: '生命不息，折腾不止'
 description: ''
 keywords: EE 电子 MCU
 author: Jinyi
 language: zh_CN
-timezone: ''
+timezone: Asia/Shanghai
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
@@ -65,10 +65,27 @@ index_generator:
   per_page: 10
   order_by: -date
 
+archieve_generator:
+  per_page: 30,
+  yearly: true,
+  monthly: true
+
 # Category & Tag
 default_category: uncategorized
 category_map:
 tag_map:
+
+tag_generator:
+  per_page: 20
+  enable_index_page: false
+
+category_generator:
+  perpage: 20,
+  enable_index_page: false
+
+search:
+  path: search.xml
+  filed: post
 
 # Metadata elements
 ## https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
