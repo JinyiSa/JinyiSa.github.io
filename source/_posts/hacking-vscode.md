@@ -2,10 +2,10 @@
 title: VSCode写一切——MCU篇
 date: 2023-04-27 02:07:53
 tags:
-    - STM32
+    - MCU
 categories:
-    - STM32
-    - 折腾记录
+    - MCU
+    - 瞎折腾
 ---
 
 ## Why VSCode?

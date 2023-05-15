@@ -4,7 +4,7 @@ date: 2023-04-23 17:30:53
 tags: 
 - EE
 - 模电
-- STM32
+- MCU
 - NUEDC
 categories: NUEDC
 ---

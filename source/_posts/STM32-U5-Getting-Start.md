@@ -2,12 +2,11 @@
 title: STM32U5踩坑——模拟外设篇
 date: 2023-04-18 11:38:23
 tags:
-    - EE
     - 踩坑
-    - STM32
+    - MCU
 categories:
-    - STM32
-    - 折腾记录
+    - MCU
+    - 瞎折腾
 ---
 ## 初识STM32U5
 
