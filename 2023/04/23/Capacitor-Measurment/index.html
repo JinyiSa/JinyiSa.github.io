@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/orange/pace-theme-center-circle.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"jinyisa.gitub.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.15.1","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"flat","show_result":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="题目要求  使用单片机UART或LCD屏显示测量结果 测量范围10nF~100nF 测量绝对误差不大于1nF  参考方案分析 老师给我们提供了一个参考方案——用555搭建震荡器，通过测555输出频率来求解电容量。虽然笔者并不打算用这个方案，但还是分析一下好了 (不然怎么能体现出我方案的优越性呢)。这个方案的电路大概长这样:   (电路图来源于网络，侵删)  讲道理，这玩意简单到我懒得分析原理了，但">
+<meta property="og:type" content="article">
+<meta property="og:title" content="电赛训练笔记——电容测量篇">
+<meta property="og:url" content="https://jinyisa.gitub.io/2023/04/23/Capacitor-Measurment/index.html">
+<meta property="og:site_name" content="Something Boring">
+<meta property="og:description" content="题目要求  使用单片机UART或LCD屏显示测量结果 测量范围10nF~100nF 测量绝对误差不大于1nF  参考方案分析 老师给我们提供了一个参考方案——用555搭建震荡器，通过测555输出频率来求解电容量。虽然笔者并不打算用这个方案，但还是分析一下好了 (不然怎么能体现出我方案的优越性呢)。这个方案的电路大概长这样:   (电路图来源于网络，侵删)  讲道理，这玩意简单到我懒得分析原理了，但">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2023/04/23/YOPqazVRyGXs18i.png">
+<meta property="og:image" content="https://s2.loli.net/2023/04/23/95dUvxmbYSjeRKn.png">
+<meta property="og:image" content="https://s2.loli.net/2023/04/26/fEwkUAyNVTbt369.png">
+<meta property="article:published_time" content="2023-04-23T09:30:53.000Z">
+<meta property="article:modified_time" content="2023-06-12T05:56:54.896Z">
+<meta property="article:author" content="Jinyi">
+<meta property="article:tag" content="EE">
+<meta property="article:tag" content="模电">
+<meta property="article:tag" content="MCU">
+<meta property="article:tag" content="NUEDC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2023/04/23/YOPqazVRyGXs18i.png">
+
+
+<link rel="canonical" href="https://jinyisa.gitub.io/2023/04/23/Capacitor-Measurment/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh_CN","comments":true,"permalink":"https://jinyisa.gitub.io/2023/04/23/Capacitor-Measurment/","path":"2023/04/23/Capacitor-Measurment/","title":"电赛训练笔记——电容测量篇"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>电赛训练笔记——电容测量篇 | Something Boring</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Something Boring</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">生命不息，折腾不止</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E8%A6%81%E6%B1%82"><span class="nav-number">1.</span> <span class="nav-text">题目要求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%B9%E6%A1%88%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">参考方案分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E6%96%B9%E6%A1%88"><span class="nav-number">3.</span> <span class="nav-text">我的方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AC%E4%BB%B6%E8%AE%BE%E8%AE%A1-v-i%E5%8F%98%E6%8D%A2%E5%99%A8"><span class="nav-number">3.1.</span> <span class="nav-text">硬件设计 (V-I变换器)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.2.</span> <span class="nav-text">软件设计</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jinyi</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JinyiSa" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JinyiSa" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:r1hwxtpa1@mozmail.com" title="E-Mail → mailto:r1hwxtpa1@mozmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh_CN">
+    <link itemprop="mainEntityOfPage" href="https://jinyisa.gitub.io/2023/04/23/Capacitor-Measurment/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jinyi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Something Boring">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="电赛训练笔记——电容测量篇 | Something Boring">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          电赛训练笔记——电容测量篇
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-04-23 17:30:53" itemprop="dateCreated datePublished" datetime="2023-04-23T17:30:53+08:00">2023-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-06-12 13:56:54" itemprop="dateModified" datetime="2023-06-12T13:56:54+08:00">2023-06-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/NUEDC/" itemprop="url" rel="index"><span itemprop="name">NUEDC</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="题目要求">题目要求</h2>
+<ol type="1">
+<li>使用单片机UART或LCD屏显示测量结果</li>
+<li>测量范围10nF~100nF</li>
+<li>测量绝对误差不大于1nF</li>
+</ol>
+<h2 id="参考方案分析">参考方案分析</h2>
+老师给我们提供了一个参考方案——用555搭建震荡器，通过测555输出频率来求解电容量。虽然笔者并不打算用这个方案，但还是分析一下好了 <del>(不然怎么能体现出我方案的优越性呢)</del>。这个方案的电路大概长这样:<br />
+<img src="https://s2.loli.net/2023/04/23/YOPqazVRyGXs18i.png" alt="NE555_Osc_Circuit.png" />
+<center>
+(电路图来源于网络，侵删)
+</center>
+<p>讲道理，这玩意简单到我懒得分析原理了，但不分析原理好像又不太能讲明白为啥不用....<br />
+简单分析一下好了。首先，555的内部结构长这样:</p>
+<figure>
+<img src="https://s2.loli.net/2023/04/23/95dUvxmbYSjeRKn.png" alt="" /><figcaption>NE555_Internal_Circuit.png</figcaption>
+</figure>
+<p>如果把这玩意替换到上面的图里，555无稳态振荡器的原理就很明了了：</p>
+<ul>
+<li>Stage1: 上电初期，RS触发器的输出为0，DISCH和GND间的BJT关断，此时 <span class="math inline">\(V_{cc}\)</span> 通过 <span class="math inline">\(R_{1}\)</span>和<span class="math inline">\(R_{2}\)</span>给C充电</li>
+<li>Stage2: 充电至<span class="math inline">\(U_{C} &gt; \frac{1}{3}V_{cc}\)</span>, 此时，下面的比较器输出低电平，S端被置0，但R端依然为0，RS触发器状态不变</li>
+<li>Stage3: 充电至<span class="math inline">\(U_{C} &gt; \frac{2}{3}V_{cc}\)</span>，此时，上面的比较器输出高电平，R端被置1，而S端在Stage2中就成了0，RS触发器的输出为1，此时DISCH和GND间BJT导通，电容通过<span class="math inline">\(R_{2}\)</span>放电</li>
+<li>Stage4: 放电至<span class="math inline">\(U_{C} &lt; \frac{2}{3}V_{cc}\)</span>，此时，上面的比较器输出低电平，R端被置0，此时S依然为0，RS触发器输出仍然为1</li>
+<li>Stage5: 放电至<span class="math inline">\(U_{C} &lt; \frac{1}{3}V_{cc}\)</span>，此时，下面的比较器输出高电平，S端被置1，此时RS触发器状态变化，输出翻转到0，状态回到Stage1</li>
+</ul>
+<p>根据上面的过程，我们可以很容易的计算NE555的输出频率和占空比。由于稳定下来之后<span class="math inline">\(U_{C}\)</span>一直介于<span class="math inline">\(\frac{1}{3}V_{cc}\)</span>和<span class="math inline">\(\frac{2}{3}V_{cc}\)</span>之间，对于充电过程，有： <span class="math display">\[ t_{charge} = (R_{1} + R_{2})C\ln{\frac{\frac{2}{3}V_{cc} - V_{cc}}{\frac{1}{3}V_{cc} - V_{cc}}} \]</span> <span class="math display">\[ t_{charge} = (R_{1} + R_{2})C\ln{2} \]</span> 同理可得： <span class="math display">\[ t_{discharge} = R_{2}C\ln{2} \]</span> 所以有： <span class="math display">\[ f = \frac{1}{t_{charge} + t_{discharge}} = \frac{1}{(R_{1} + R_{2})C\ln{2} + R_{2}C\ln{2}}\]</span> <span class="math display">\[ DutyCycle = \frac{t_{charge}}{t_{discharge} + t_{charge}} = \frac{(R_{1} + R_{2})C\ln{2}}{(R_{1} + R_{2})C\ln{2} + R_{2}C\ln{2}} = \frac{R_{1} + R_{2}}{R_{1} + 2R_{2}}\]</span></p>
+<p>Seems good! 然而这个电路有其不可避免的问题： - 首先，NE555本身飘的很厉害。 - 其次，这个电路里出现了<span class="math inline">\(\ln{2}\)</span>，这是个无理数。在处理数据时必然存在浮点数精度丢失的问题。</p>
+<p>于是——就引出了我的方案：V-I变换器恒流充电 + STM32模拟看门狗</p>
+<h2 id="我的方案">我的方案</h2>
+<h3 id="硬件设计-v-i变换器">硬件设计 (V-I变换器)</h3>
+<p>先设计好V-I变换器的拓扑，笔者使用双反馈结构的V-I变换器，电路如下:</p>
+<figure>
+<img src="https://s2.loli.net/2023/04/26/fEwkUAyNVTbt369.png" alt="" /><figcaption>V-IConverterWithTrim.png</figcaption>
+</figure>
+<p>事实上，这个电路依然非常简单。<span class="math inline">\(V_{Trim}\)</span>是用来调零的信号，在分析阶段我们可以认为它就是0（不知道什么是调零的<a target="_blank" rel="noopener" href="https://wiki.analog.com/university/courses/electronics/text/chapter-3">戳这里</a>）。我们先约定一些记号：</p>
+<table>
+<thead>
+<tr class="header">
+<th>符号</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(U_{in}\)</span></td>
+<td><span class="math inline">\(V_{input+}\)</span> 节点电压</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(U_{1}A_{-}\)</span></td>
+<td><span class="math inline">\(U_{1}A\)</span> 反相端电压</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(U_{1}A_{+}\)</span></td>
+<td><span class="math inline">\(U_{1}A\)</span> 同相端电压</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(U_{1}A_{Out}\)</span></td>
+<td><span class="math inline">\(U_{1}A\)</span> 输出电压</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(U_{1}B_{+}\)</span></td>
+<td><span class="math inline">\(U_{1}B\)</span> 同相端电压</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(U_{out}\)</span></td>
+<td><span class="math inline">\(V_{output}\)</span> 节点电压</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(I_{out}\)</span></td>
+<td><span class="math inline">\(R_{5}\)</span>和<span class="math inline">\(C_{3}\)</span> 的电流</td>
+</tr>
+</tbody>
+</table>
+<p>对于这个电路，由运放定律可知,在稳态下，必然有：</p>
+<p><span class="math display">\[ \begin{equation}
+U_{1}A_{+} = U_{1}A_{-} 
+\end{equation} \]</span></p>
+<p>我们分析 <span class="math inline">\(U_{1}A_{-}\)</span>，很容易有(电阻分压)：</p>
+<p><span class="math display">\[ \begin{equation}
+U_{1}A_{-} = U_{1}A_{Out} \times \frac{R_2}{R_2 + R_4}
+\end{equation} \]</span></p>
+<p>然后看 <span class="math inline">\(U_{1}A_{+}\)</span>，同理有：</p>
+<p><span class="math display">\[ \begin{equation}
+U_{1}A_{+} = \left(U_{1}B_{Out} - U_{in}\right) \times \frac{R_1}{R_1 + R_3}
+\end{equation} \]</span></p>
+<p>由于 <span class="math inline">\(U_{1}B\)</span> 是跟随器，有：</p>
+<p><span class="math display">\[ \begin{equation}
+U_{1}B_{Out} = U_{Out}
+\end{equation} \]</span></p>
+<p>代回式(3)，有：</p>
+<p><span class="math display">\[ \begin{equation}
+U_{1}A_{+} = \left(U_{Out} - U_{in}\right) \times \frac{R_1}{R_1 + R_3}
+\end{equation} \]</span></p>
+<p>联立式(1)(2)(5)，有：</p>
+<p><span class="math display">\[ \begin{equation}
+U_{1}A_{Out} \times \frac{R_2}{R_2 + R_4} = \left( U_{Out} - U_{in} \right) \times \frac{R_1}{R_1 + R_3}
+\end{equation} \]</span></p>
+<p>对于我们的电路而言：</p>
+<p><span class="math display">\[
+R_1 = R_2 = R_3 = R_4 = 1K\Omega
+\]</span></p>
+<p>故而，式(6)稍作整理有：</p>
+<p><span class="math display">\[ \begin{equation}
+U_{1}A_{Out} = U_{out} - U_{in}
+\end{equation} \]</span></p>
+<p>对于<span class="math inline">\(R_5\)</span>有：</p>
+<p><span class="math display">\[ \begin{equation}
+I_{out} = \frac{U}{I} = \frac{U_{1}A_{Out} - U_{out}}{R_5}
+\end{equation} \]</span></p>
+<p>(7)带入(8)，有： <span class="math display">\[
+I_{Out} = \frac{U_{in}}{R_5}
+\]</span></p>
+<p>至此，V-I变换器的理论计算算是完成了，接下来就是<span class="math inline">\(R_5\)</span>取值问题。这个电路的<span class="math inline">\(V_{input}\)</span>将连接到STM32F407的DAC上，故而<span class="math inline">\(U_{in} \in \left[ 0, 3.3 \right] V\)</span> 。对于本题，笔者并不满足于题目的要求，笔者希望电路至少能测量1nF~1uF的电容，并且充电时间介于1mS和60mS之间(充电时间限制来自于软件，后文会提到)。很容易得出充电电流应该在 1uA到55uA之间。不妨取3.3V时满幅输出为60mA，则<span class="math inline">\(R_5\)</span>应为<span class="math inline">\(55K\Omega\)</span>，在<span class="math inline">\(E_{24}\)</span> 系列电阻中取最接近的 <span class="math inline">\(56K\Omega\)</span>，满幅输出约为58.93uA，仍然满足要求。在输出为1uA时，DAC输出是560mV不算过小。所以，<span class="math inline">\(R_5\)</span>取<span class="math inline">\(56K\Omega\)</span>是合适的。<br />
+至此，我们的硬件设计完成了。接下来就是Happy Coding。</p>
+<h3 id="软件设计">软件设计</h3>
+<p>软件部分相对简单，直接给出设计思路好了。开启一个TIM提供1uS的定时中断，并设置一个累加器记录从充电开始到充电结束的时间。ADC开启模拟看门狗，上界设置为4095，这样在ADC输入达到3.3V时将触发模拟看门狗中断，在这个中断里关闭TIM的定时中断，并通过累加器的值计算电容量。</p>
+
+    </div>
+
+    
+    
+    
+    
+    <div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css" />
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: "5791f863bd3cb59b8944",
+        clientSecret: "2543468c3817e75021aab686a82c16ef100f4263",
+        repo: "JinyiSa.github.io", // 博客仓库地址
+        owner: "JinyiSa", // github 用户名
+        admin: ["JinyiSa"], // github 用户名
+        perPage: 20,
+        id: location.pathname.slice(0, 50), // 查找 issus 的条件，后面将对 id 有针对逻辑
+        title: "电赛训练笔记——电容测量篇",
+        body: "🚀 " + location.href + "评论区", // 初始化后,issues 的内容
+    });
+    gitalk.render("gitalk-container");
+</script>
+
+<style>
+	#issues_url{
+		text-align: center;
+    	font-size: 16px;
+	}
+	#issues_url a{
+		color:#6190e8;
+	}
+</style>
+<div id="issues_url">📢 因为是开源博客，为避免 <strong>Gitalk授权 </strong>带来的 <a target="_blank" rel="noopener" href="https://github.com/dear-github/dear-github/issues/113">安全风险</a>，也可直接从issue中评论
+</div></div>
+    
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Jinyi
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://jinyisa.gitub.io/2023/04/23/Capacitor-Measurment/" title="电赛训练笔记——电容测量篇">https://jinyisa.gitub.io/2023/04/23/Capacitor-Measurment/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/EE/" rel="tag"><i class="fa fa-tag"></i> EE</a>
+              <a href="/tags/%E6%A8%A1%E7%94%B5/" rel="tag"><i class="fa fa-tag"></i> 模电</a>
+              <a href="/tags/MCU/" rel="tag"><i class="fa fa-tag"></i> MCU</a>
+              <a href="/tags/NUEDC/" rel="tag"><i class="fa fa-tag"></i> NUEDC</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/04/18/STM32-U5-Getting-Start/" rel="prev" title="STM32U5踩坑——模拟外设篇">
+                  <i class="fa fa-chevron-left"></i> STM32U5踩坑——模拟外设篇
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/04/27/hacking-vscode/" rel="next" title="VSCode写一切——MCU篇">
+                  VSCode写一切——MCU篇 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jinyi</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/JinyiSa" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="https://cdnjs.cloudflare.com/ajax/libs/ribbon.js/1.0.2/ribbon.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+  <script class="next-config" data-name="pdf" type="application/json">{"object_url":{"url":"https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.8/pdfobject.min.js","integrity":"sha256-tu9j5pBilBQrWSDePOOajCUdz6hWsid/lBNzK4KgEPM="},"url":"/lib/pdf/web/viewer.html"}</script>
+  <script src="/js/third-party/tags/pdf.js"></script>
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
